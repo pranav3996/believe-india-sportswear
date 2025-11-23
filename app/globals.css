@@ -145,3 +145,8 @@ img[data-loaded="false"] {
 img[data-loaded="true"] {
   opacity: 1;
 }
+
+input,
+textarea {
+  color: black;
+}

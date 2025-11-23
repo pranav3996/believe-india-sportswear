@@ -1,5 +1,7 @@
 import './globals.css';
 import Providers from './providers';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export const metadata = {
     title: 'Believe India Sportswear - Premium Sports Apparel',
@@ -21,7 +23,11 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en">
             <body className="bg-gradient-to-br from-gray-50 to-gray-100">
-                <Providers>{children}</Providers>
+                <Providers>
+                    <Header />
+                    {children}
+                    <Footer />
+                </Providers>
             </body>
         </html>
     );
