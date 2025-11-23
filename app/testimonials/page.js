@@ -98,7 +98,7 @@ export default function TestimonialsPage() {
 
                                 {/* Quote */}
                                 <p className="text-gray-700 mb-6 italic">
-                                    "{testimonial.text || testimonial.comment}"
+                                    &quot;{testimonial.text || testimonial.comment}&quot;
                                 </p>
 
                                 {/* Author */}
