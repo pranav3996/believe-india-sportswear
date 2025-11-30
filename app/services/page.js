@@ -1,51 +1,46 @@
 'use client';
 
+import ServiceCard from '../../components/ServiceCard';
+/**
+ * Services Page - Believe India Sportswear
+ * 
+ * This page displays all services in a dynamic, data-driven manner.
+ * Services are loaded from the centralized data file and rendered using
+ * the reusable ServiceCard component.
+ * 
+ * To add/remove/edit services:
+ * - Go to /data/services.js
+ * - Add, remove, or modify the service objects
+ * - The UI will automatically update
+ * 
+ * Future enhancements:
+ * - Uncomment the Suspense wrapper for better loading UX
+ * - Add service filtering by category
+ * - Integrate with backend API (see fetchServicesFromAPI in data/services.js)
+ * - Add animations on scroll (AOS library or Framer Motion)
+ */
+
+
+import { getAllServices } from '../../data/services';
+
+// import { Suspense } from 'react'; // Uncomment for async data fetching
+
 export default function ServicesPage() {
-    const services = [
-        {
-            icon: '🎨',
-            title: 'Custom Design',
-            description: 'Create unique sportswear with your team colors, logos, and designs. Our expert designers bring your vision to life.',
-            features: ['Logo placement', 'Color customization', 'Name & number printing', 'Sublimation printing']
-        },
-        {
-            icon: '📦',
-            title: 'Bulk Orders',
-            description: 'Special pricing for team orders, clubs, schools, and corporate events. Minimum order quantities apply.',
-            features: ['Competitive pricing', 'Fast turnaround', 'Quality assurance', 'Dedicated support']
-        },
-        {
-            icon: '✂️',
-            title: 'Custom Sizing',
-            description: 'Perfect fit for every athlete. We offer custom sizing options to ensure maximum comfort and performance.',
-            features: ['Wide size range', 'Custom measurements', 'Youth to adult sizes', 'Plus size options']
-        },
-        {
-            icon: '🏆',
-            title: 'Quality Assurance',
-            description: 'Every product undergoes rigorous quality checks. We use premium fabrics and advanced manufacturing techniques.',
-            features: ['Premium materials', 'Durability testing', 'Color fastness', 'Quality certifications']
-        },
-        {
-            icon: '🚚',
-            title: 'Fast Delivery',
-            description: 'Quick production and reliable shipping across India. Track your order from factory to doorstep.',
-            features: ['Pan-India shipping', 'Order tracking', 'Secure packaging', 'Express options available']
-        },
-        {
-            icon: '💬',
-            title: 'Consultation',
-            description: 'Free consultation for design, fabric selection, and order planning. Our team helps you make informed decisions.',
-            features: ['Design assistance', 'Fabric samples', 'Price quotes', 'Expert guidance']
-        }
-    ];
+    // Load services from centralized data file
+    // This can be replaced with: const services = await fetchServicesFromAPI();
+    const services = getAllServices();
+
+    // Optional: Get only featured services for special highlighting
+    // const featuredServices = getFeaturedServices();
 
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Hero Section */}
             <section className="bg-gradient-to-br from-primary-600 to-accent-600 text-white py-20">
                 <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-5xl font-display font-bold mb-4">Our Services</h1>
+                    <h1 className="text-5xl font-display font-bold mb-4">
+                        Our Services
+                    </h1>
                     <p className="text-xl text-white/90 max-w-2xl mx-auto">
                         Comprehensive sportswear solutions tailored to your needs
                     </p>
@@ -54,40 +49,51 @@ export default function ServicesPage() {
 
             {/* Services Grid */}
             <section className="container mx-auto px-4 py-16">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {services.map((service, index) => (
-                        <div
-                            key={index}
-                            className="bg-white rounded-lg shadow-md p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                        >
-                            <div className="text-5xl mb-4">{service.icon}</div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                                {service.title}
-                            </h3>
-                            <p className="text-gray-600 mb-6">
-                                {service.description}
-                            </p>
-                            <ul className="space-y-2">
-                                {service.features.map((feature, idx) => (
-                                    <li key={idx} className="flex items-center text-sm text-gray-700">
-                                        <svg
-                                            className="w-5 h-5 text-primary-600 mr-2 flex-shrink-0"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                        {feature}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
+                {/* 
+                    Optional: Add section header with count
+                */}
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                        What We Offer
+                    </h2>
+                    <p className="text-gray-600">
+                        {services.length} specialized services to meet all your sportswear needs
+                    </p>
                 </div>
+
+                {/* 
+                    Responsive Grid Layout:
+                    - 1 column on mobile
+                    - 2 columns on tablet (md breakpoint)
+                    - 3 columns on desktop (lg breakpoint)
+                */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {/* 
+                        Suspense wrapper for future async data loading
+                        Uncomment when integrating with backend API
+                    */}
+                    {/* <Suspense fallback={<ServiceCardSkeleton />}> */}
+
+                    {services.map((service) => (
+                        <ServiceCard
+                            key={service.id} // Using unique ID instead of index for better React performance
+                            service={service}
+                            variant={service.featured ? 'featured' : 'default'}
+                        // animate={true} // Uncomment to enable animations
+                        />
+                    ))}
+
+                    {/* </Suspense> */}
+                </div>
+
+                {/* Empty state (shown when no services available) */}
+                {services.length === 0 && (
+                    <div className="text-center py-16">
+                        <p className="text-gray-500 text-lg">
+                            No services available at the moment.
+                        </p>
+                    </div>
+                )}
             </section>
 
             {/* CTA Section */}
@@ -118,3 +124,16 @@ export default function ServicesPage() {
         </div>
     );
 }
+
+/**
+ * Static metadata for SEO (Next.js 13+ App Router)
+ * 
+ * Uncomment this section if you want to add page-specific metadata
+ */
+/*
+export const metadata = {
+    title: 'Our Services | Believe India Sportswear',
+    description: 'Custom sportswear design, bulk orders, quality assurance, fast delivery, and consultation services for teams, clubs, and organizations across India.',
+    keywords: ['sportswear services', 'custom design', 'bulk orders', 'team jerseys', 'India'],
+};
+*/
