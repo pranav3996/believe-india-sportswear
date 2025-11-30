@@ -41,7 +41,7 @@ const serviceSchema = new mongoose.Schema({
         // Optional: Add URL validation
         // validate: {
         //     validator: function(v) {
-        //         return /^(https?:\/\/)/.test(v);
+        //         return /^(https?:\\/\\/)/.test(v);
         //     },
         //     message: 'Image must be a valid URL'
         // }
@@ -63,6 +63,7 @@ const serviceSchema = new mongoose.Schema({
     features: [{
         type: String,
         trim: true,
+        maxlength: [100, 'Each feature cannot exceed 100 characters'],
     }],
     createdAt: {
         type: Date,
@@ -78,15 +79,33 @@ const serviceSchema = new mongoose.Schema({
 // Indexes for better query performance
 serviceSchema.index({ category: 1, featured: -1 });
 serviceSchema.index({ createdAt: -1 });
+// Compound index for paginated queries (most common use case)
+serviceSchema.index({ category: 1, featured: -1, createdAt: -1 });
+// Text index for search functionality
+serviceSchema.index({ title: 'text', description: 'text' });
 
-// Middleware: Update timestamp before saving
+// Middleware: Validate features array length before saving
 serviceSchema.pre('save', function (next) {
+    if (this.features && this.features.length > 10) {
+        const err = new Error('Cannot have more than 10 features');
+        err.name = 'ValidationError';
+        return next(err);
+    }
     this.updatedAt = Date.now();
     next();
 });
 
 // Middleware: Update timestamp before findOneAndUpdate
 serviceSchema.pre('findOneAndUpdate', function (next) {
+    const update = this.getUpdate();
+
+    // Check features array length if being updated
+    if (update.features && update.features.length > 10) {
+        const err = new Error('Cannot have more than 10 features');
+        err.name = 'ValidationError';
+        return next(err);
+    }
+
     this.set({ updatedAt: Date.now() });
     next();
 });

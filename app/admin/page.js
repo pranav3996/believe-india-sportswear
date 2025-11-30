@@ -6,6 +6,7 @@ import { useSession, signOut } from 'next-auth/react';
 import ImageUpload from '../../components/admin/ImageUpload';
 import CompanyForm from '../../components/admin/CompanyForm';
 import GalleryManager from '../../components/admin/GalleryManager';
+import ServiceManager from '../../components/admin/ServiceManager';
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('upload');
@@ -97,6 +98,15 @@ export default function AdminDashboard() {
                                 Manage Gallery
                             </button>
                             <button
+                                onClick={() => setActiveTab('services')}
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 ${activeTab === 'services'
+                                    ? 'border-primary-600 text-primary-600'
+                                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                                    }`}
+                            >
+                                Services
+                            </button>
+                            <button
                                 onClick={() => setActiveTab('company')}
                                 className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 ${activeTab === 'company'
                                     ? 'border-primary-600 text-primary-600'
@@ -112,6 +122,7 @@ export default function AdminDashboard() {
                     <div className="p-6">
                         {activeTab === 'upload' && <ImageUpload />}
                         {activeTab === 'gallery' && <GalleryManager />}
+                        {activeTab === 'services' && <ServiceManager />}
                         {activeTab === 'company' && <CompanyForm />}
                     </div>
                 </div>

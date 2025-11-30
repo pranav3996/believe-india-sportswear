@@ -10,9 +10,17 @@ export const metadata = {
     description: 'Crafting excellence in every stitch. Your trusted partner for high-quality custom sportswear and athletic apparel.',
     keywords: 'sportswear, athletic apparel, custom sportswear, sports clothing, India sportswear manufacturer',
     icons: {
-        icon: '/favicon.ico',
-        shortcut: '/favicon.ico',
-        apple: '/favicon.ico',
+        icon: [
+            { url: '/icon-96x96.png', sizes: '96x96', type: 'image/png' },
+            { url: '/icon-96x96.png', sizes: '32x32', type: 'image/png' },
+            { url: '/icon-96x96.png', sizes: '16x16', type: 'image/png' },
+        ],
+        shortcut: '/icon-96x96.png',
+        apple: '/icon-96x96.png',
+        other: {
+            rel: 'apple-touch-icon-precomposed',
+            url: '/icon-96x96.png',
+        },
     },
     openGraph: {
         title: 'Believe India Sportswear',

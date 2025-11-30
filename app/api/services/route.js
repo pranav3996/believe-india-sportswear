@@ -1,21 +1,36 @@
 import { NextResponse } from 'next/server';
 import connectDB from '../../../lib/db';
 import Service from '../../../models/Service';
+import { requireAdmin } from '../../../lib/auth-helpers';
+import {
+    parseQueryParams,
+    buildPaginatedResponse,
+    buildQueryFilter,
+    buildSortObject,
+    handleApiError,
+} from '../../../lib/api-helpers';
 
 /**
  * GET /api/services
  * 
- * Fetch all services with optional filtering
+ * Fetch all services with optional filtering and pagination
  * 
  * Query Parameters:
+ * - page: Page number (default: 1)
+ * - limit: Items per page (default: 10, max: 100)
  * - category: Filter by category (optional)
  * - featured: Filter featured services (optional, 'true' or 'false')
+ * - search: Search in title and description (optional)
+ * - sortBy: Field to sort by (default: createdAt)
+ * - order: Sort order 'asc' or 'desc' (default: desc)
  * 
  * Response:
  * {
  *   success: true,
  *   data: [...services],
- *   count: number
+ *   pagination: {
+ *     total, count, page, limit, totalPages, hasNext, hasPrev
+ *   }
  * }
  */
 export async function GET(request) {
@@ -23,41 +38,48 @@ export async function GET(request) {
         await connectDB();
 
         const { searchParams } = new URL(request.url);
-        const category = searchParams.get('category');
-        const featured = searchParams.get('featured');
+        const params = parseQueryParams(searchParams);
 
-        // Build query object
-        let query = {};
+        // Build query filter
+        const filter = buildQueryFilter(params);
 
-        if (category && category !== 'all') {
-            query.category = category.toLowerCase();
+        // Build sort object
+        const sort = buildSortObject(params.sortBy, params.order);
+
+        // Check if pagination is requested (backward compatibility)
+        const isPaginated = searchParams.has('page');
+
+        if (isPaginated) {
+            // Fetch paginated services
+            const [services, total] = await Promise.all([
+                Service.find(filter)
+                    .sort(sort)
+                    .skip(params.skip)
+                    .limit(params.limit)
+                    .lean(),
+                Service.countDocuments(filter),
+            ]);
+
+            return NextResponse.json(
+                buildPaginatedResponse(services, total, params.page, params.limit)
+            );
+        } else {
+            // Legacy: fetch all services without pagination
+            const services = await Service.find(filter)
+                .sort(sort)
+                .lean();
+
+            return NextResponse.json({
+                success: true,
+                data: services,
+                count: services.length,
+            });
         }
-
-        if (featured === 'true') {
-            query.featured = true;
-        } else if (featured === 'false') {
-            query.featured = false;
-        }
-
-        // Fetch services sorted by featured status and creation date
-        const services = await Service.find(query)
-            .sort({ featured: -1, createdAt: -1 })
-            .lean(); // Use lean() for better performance (returns plain JS objects)
-
-        return NextResponse.json({
-            success: true,
-            data: services,
-            count: services.length,
-        });
     } catch (error) {
-        console.error('Error fetching services:', error);
+        const errorResponse = handleApiError(error, 'Failed to fetch services');
         return NextResponse.json(
-            {
-                success: false,
-                error: 'Failed to fetch services',
-                message: error.message
-            },
-            { status: 500 }
+            { success: errorResponse.success, error: errorResponse.error },
+            { status: errorResponse.status }
         );
     }
 }
@@ -65,7 +87,7 @@ export async function GET(request) {
 /**
  * POST /api/services
  * 
- * Create a new service
+ * Create a new service (Admin only)
  * 
  * Request Body:
  * {
@@ -87,6 +109,15 @@ export async function GET(request) {
  */
 export async function POST(request) {
     try {
+        // Check authentication
+        const { session, error } = await requireAdmin();
+        if (error) {
+            return NextResponse.json(
+                { success: error.success, error: error.error },
+                { status: error.status }
+            );
+        }
+
         await connectDB();
 
         const data = await request.json();
@@ -127,39 +158,14 @@ export async function POST(request) {
             { status: 201 }
         );
     } catch (error) {
-        console.error('Error creating service:', error);
-
-        // Handle Mongoose validation errors
-        if (error.name === 'ValidationError') {
-            const errors = Object.values(error.errors).map(err => err.message);
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Validation failed',
-                    details: errors
-                },
-                { status: 400 }
-            );
-        }
-
-        // Handle duplicate key errors
-        if (error.code === 11000) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Service with this title already exists'
-                },
-                { status: 409 }
-            );
-        }
-
+        const errorResponse = handleApiError(error, 'Failed to create service');
         return NextResponse.json(
             {
-                success: false,
-                error: 'Failed to create service',
-                message: error.message
+                success: errorResponse.success,
+                error: errorResponse.error,
+                details: errorResponse.details,
             },
-            { status: 500 }
+            { status: errorResponse.status }
         );
     }
 }

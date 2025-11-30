@@ -1,37 +1,49 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import ServiceCard from '../../components/ServiceCard';
+
 /**
  * Services Page - Believe India Sportswear
  * 
- * This page displays all services in a dynamic, data-driven manner.
- * Services are loaded from the centralized data file and rendered using
- * the reusable ServiceCard component.
+ * This page displays all services fetched dynamically from the API.
+ * Services are managed through the admin panel and automatically
+ * reflect on this page.
  * 
  * To add/remove/edit services:
- * - Go to /data/services.js
- * - Add, remove, or modify the service objects
- * - The UI will automatically update
- * 
- * Future enhancements:
- * - Uncomment the Suspense wrapper for better loading UX
- * - Add service filtering by category
- * - Integrate with backend API (see fetchServicesFromAPI in data/services.js)
- * - Add animations on scroll (AOS library or Framer Motion)
+ * - Go to /admin (requires login)
+ * - Navigate to the Services tab
+ * - Create, update, or delete services
+ * - Changes will automatically appear here
  */
 
-
-import { getAllServices } from '../../data/services';
-
-// import { Suspense } from 'react'; // Uncomment for async data fetching
-
 export default function ServicesPage() {
-    // Load services from centralized data file
-    // This can be replaced with: const services = await fetchServicesFromAPI();
-    const services = getAllServices();
+    const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Optional: Get only featured services for special highlighting
-    // const featuredServices = getFeaturedServices();
+    // Fetch services from API on component mount
+    useEffect(() => {
+        async function fetchServices() {
+            try {
+                const response = await fetch('/api/services');
+                const data = await response.json();
+
+                if (data.success) {
+                    setServices(data.data);
+                } else {
+                    setError('Failed to load services');
+                }
+            } catch (err) {
+                console.error('Error fetching services:', err);
+                setError('Failed to load services');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchServices();
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -49,50 +61,59 @@ export default function ServicesPage() {
 
             {/* Services Grid */}
             <section className="container mx-auto px-4 py-16">
-                {/* 
-                    Optional: Add section header with count
-                */}
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                        What We Offer
-                    </h2>
-                    <p className="text-gray-600">
-                        {services.length} specialized services to meet all your sportswear needs
-                    </p>
-                </div>
-
-                {/* 
-                    Responsive Grid Layout:
-                    - 1 column on mobile
-                    - 2 columns on tablet (md breakpoint)
-                    - 3 columns on desktop (lg breakpoint)
-                */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {/* 
-                        Suspense wrapper for future async data loading
-                        Uncomment when integrating with backend API
-                    */}
-                    {/* <Suspense fallback={<ServiceCardSkeleton />}> */}
-
-                    {services.map((service) => (
-                        <ServiceCard
-                            key={service.id} // Using unique ID instead of index for better React performance
-                            service={service}
-                            variant={service.featured ? 'featured' : 'default'}
-                        // animate={true} // Uncomment to enable animations
-                        />
-                    ))}
-
-                    {/* </Suspense> */}
-                </div>
-
-                {/* Empty state (shown when no services available) */}
-                {services.length === 0 && (
+                {/* Loading State */}
+                {loading && (
                     <div className="text-center py-16">
-                        <p className="text-gray-500 text-lg">
-                            No services available at the moment.
-                        </p>
+                        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-600 mx-auto mb-4"></div>
+                        <p className="text-gray-600">Loading services...</p>
                     </div>
+                )}
+
+                {/* Error State */}
+                {error && (
+                    <div className="text-center py-16">
+                        <p className="text-red-600 text-lg mb-4">{error}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                        >
+                            Retry
+                        </button>
+                    </div>
+                )}
+
+                {/* Services Content */}
+                {!loading && !error && (
+                    <>
+                        <div className="text-center mb-12">
+                            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                                What We Offer
+                            </h2>
+                            <p className="text-gray-600">
+                                {services.length} specialized services to meet all your sportswear needs
+                            </p>
+                        </div>
+
+                        {/* Responsive Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {services.map((service) => (
+                                <ServiceCard
+                                    key={service._id || service.id}
+                                    service={service}
+                                    variant={service.featured ? 'featured' : 'default'}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Empty state */}
+                        {services.length === 0 && (
+                            <div className="text-center py-16">
+                                <p className="text-gray-500 text-lg">
+                                    No services available at the moment.
+                                </p>
+                            </div>
+                        )}
+                    </>
                 )}
             </section>
 
@@ -124,16 +145,3 @@ export default function ServicesPage() {
         </div>
     );
 }
-
-/**
- * Static metadata for SEO (Next.js 13+ App Router)
- * 
- * Uncomment this section if you want to add page-specific metadata
- */
-/*
-export const metadata = {
-    title: 'Our Services | Believe India Sportswear',
-    description: 'Custom sportswear design, bulk orders, quality assurance, fast delivery, and consultation services for teams, clubs, and organizations across India.',
-    keywords: ['sportswear services', 'custom design', 'bulk orders', 'team jerseys', 'India'],
-};
-*/

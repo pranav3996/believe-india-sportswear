@@ -147,6 +147,7 @@ img[data-loaded="true"] {
 }
 
 input,
-textarea {
+textarea,
+select {
   color: black;
 }

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import connectDB from '../../../../lib/db';
 import Service from '../../../../models/Service';
 import mongoose from 'mongoose';
+import { requireAdmin } from '../../../../lib/auth-helpers';
+import { handleApiError } from '../../../../lib/api-helpers';
 
 /**
  * GET /api/services/[id]
@@ -48,14 +50,10 @@ export async function GET(request, { params }) {
             data: service,
         });
     } catch (error) {
-        console.error('Error fetching service:', error);
+        const errorResponse = handleApiError(error, 'Failed to fetch service');
         return NextResponse.json(
-            {
-                success: false,
-                error: 'Failed to fetch service',
-                message: error.message
-            },
-            { status: 500 }
+            { success: errorResponse.success, error: errorResponse.error },
+            { status: errorResponse.status }
         );
     }
 }
@@ -63,7 +61,7 @@ export async function GET(request, { params }) {
 /**
  * PUT /api/services/[id]
  * 
- * Update an existing service
+ * Update an existing service (Admin only)
  * 
  * Request Body (all fields optional, but at least one required):
  * {
@@ -85,6 +83,15 @@ export async function GET(request, { params }) {
  */
 export async function PUT(request, { params }) {
     try {
+        // Check authentication
+        const { session, error } = await requireAdmin();
+        if (error) {
+            return NextResponse.json(
+                { success: error.success, error: error.error },
+                { status: error.status }
+            );
+        }
+
         await connectDB();
 
         const { id } = params;
@@ -163,28 +170,14 @@ export async function PUT(request, { params }) {
             message: 'Service updated successfully',
         });
     } catch (error) {
-        console.error('Error updating service:', error);
-
-        // Handle Mongoose validation errors
-        if (error.name === 'ValidationError') {
-            const errors = Object.values(error.errors).map(err => err.message);
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Validation failed',
-                    details: errors
-                },
-                { status: 400 }
-            );
-        }
-
+        const errorResponse = handleApiError(error, 'Failed to update service');
         return NextResponse.json(
             {
-                success: false,
-                error: 'Failed to update service',
-                message: error.message
+                success: errorResponse.success,
+                error: errorResponse.error,
+                details: errorResponse.details,
             },
-            { status: 500 }
+            { status: errorResponse.status }
         );
     }
 }
@@ -192,7 +185,7 @@ export async function PUT(request, { params }) {
 /**
  * DELETE /api/services/[id]
  * 
- * Delete a service
+ * Delete a service (Admin only)
  * 
  * Response:
  * {
@@ -203,6 +196,15 @@ export async function PUT(request, { params }) {
  */
 export async function DELETE(request, { params }) {
     try {
+        // Check authentication
+        const { session, error } = await requireAdmin();
+        if (error) {
+            return NextResponse.json(
+                { success: error.success, error: error.error },
+                { status: error.status }
+            );
+        }
+
         await connectDB();
 
         const { id } = params;
@@ -236,14 +238,10 @@ export async function DELETE(request, { params }) {
             data: service,
         });
     } catch (error) {
-        console.error('Error deleting service:', error);
+        const errorResponse = handleApiError(error, 'Failed to delete service');
         return NextResponse.json(
-            {
-                success: false,
-                error: 'Failed to delete service',
-                message: error.message
-            },
-            { status: 500 }
+            { success: errorResponse.success, error: errorResponse.error },
+            { status: errorResponse.status }
         );
     }
 }
