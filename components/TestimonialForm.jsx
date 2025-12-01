@@ -98,6 +98,7 @@ export default function TestimonialForm({ onSuccess }) {
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">
                     Share Your Feedback
                 </h2>
+                {/* eslint-disable-next-line react/no-unescaped-entities */}
                 <p className="text-gray-600">
                     We do love to hear about your experience with our products and services
                 </p>
