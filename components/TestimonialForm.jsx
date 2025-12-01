@@ -99,7 +99,7 @@ export default function TestimonialForm({ onSuccess }) {
                     Share Your Feedback
                 </h2>
                 <p className="text-gray-600">
-                    We&apos;d love to hear about your experience with our products and services
+                    We'd love to hear about your experience with our products and services
                 </p>
             </div>
 
