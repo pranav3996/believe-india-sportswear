@@ -7,6 +7,7 @@ import ImageUpload from '../../components/admin/ImageUpload';
 import CompanyForm from '../../components/admin/CompanyForm';
 import GalleryManager from '../../components/admin/GalleryManager';
 import ServiceManager from '../../components/admin/ServiceManager';
+import TestimonialManager from '../../components/admin/TestimonialManager';
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('upload');
@@ -78,10 +79,10 @@ export default function AdminDashboard() {
                 {/* Tabs */}
                 <div className="bg-white rounded-lg shadow-sm mb-8">
                     <div className="border-b border-gray-200">
-                        <nav className="flex space-x-8 px-6" aria-label="Tabs">
+                        <nav className="flex space-x-8 px-6 overflow-x-auto" aria-label="Tabs">
                             <button
                                 onClick={() => setActiveTab('upload')}
-                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 ${activeTab === 'upload'
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'upload'
                                     ? 'border-primary-600 text-primary-600'
                                     : 'border-transparent text-gray-600 hover:text-gray-800'
                                     }`}
@@ -90,7 +91,7 @@ export default function AdminDashboard() {
                             </button>
                             <button
                                 onClick={() => setActiveTab('gallery')}
-                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 ${activeTab === 'gallery'
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'gallery'
                                     ? 'border-primary-600 text-primary-600'
                                     : 'border-transparent text-gray-600 hover:text-gray-800'
                                     }`}
@@ -99,7 +100,7 @@ export default function AdminDashboard() {
                             </button>
                             <button
                                 onClick={() => setActiveTab('services')}
-                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 ${activeTab === 'services'
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'services'
                                     ? 'border-primary-600 text-primary-600'
                                     : 'border-transparent text-gray-600 hover:text-gray-800'
                                     }`}
@@ -107,8 +108,17 @@ export default function AdminDashboard() {
                                 Services
                             </button>
                             <button
+                                onClick={() => setActiveTab('testimonials')}
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'testimonials'
+                                    ? 'border-primary-600 text-primary-600'
+                                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                                    }`}
+                            >
+                                Testimonials
+                            </button>
+                            <button
                                 onClick={() => setActiveTab('company')}
-                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 ${activeTab === 'company'
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'company'
                                     ? 'border-primary-600 text-primary-600'
                                     : 'border-transparent text-gray-600 hover:text-gray-800'
                                     }`}
@@ -123,6 +133,7 @@ export default function AdminDashboard() {
                         {activeTab === 'upload' && <ImageUpload />}
                         {activeTab === 'gallery' && <GalleryManager />}
                         {activeTab === 'services' && <ServiceManager />}
+                        {activeTab === 'testimonials' && <TestimonialManager />}
                         {activeTab === 'company' && <CompanyForm />}
                     </div>
                 </div>

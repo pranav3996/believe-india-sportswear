@@ -4,8 +4,22 @@ import { useEffect } from 'react';
 
 /**
  * Delete confirmation modal component
+ * Supports multiple item types (services, testimonials, etc.)
  */
-export default function DeleteConfirmModal({ show, service, onConfirm, onCancel }) {
+export default function DeleteConfirmModal({
+    show,
+    service, // Legacy prop for backward compatibility
+    item, // Generic item prop
+    itemType = 'service', // Type of item: 'service', 'testimonial', etc.
+    itemName, // Optional: custom name to display
+    onConfirm,
+    onCancel
+}) {
+    // Support both old and new API
+    const targetItem = item || service;
+    const displayType = itemType.charAt(0).toUpperCase() + itemType.slice(1);
+    const displayName = itemName || targetItem?.title || targetItem?.name || targetItem?.customerName;
+
     // Handle escape key
     useEffect(() => {
         const handleEscape = (e) => {
@@ -58,20 +72,24 @@ export default function DeleteConfirmModal({ show, service, onConfirm, onCancel 
                     {/* Content */}
                     <div className="text-center mb-6">
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                            Delete Service
+                            Delete {displayType}
                         </h3>
                         <p className="text-sm text-gray-600 mb-4">
-                            Are you sure you want to delete this service? This action cannot be undone.
+                            Are you sure you want to delete this {itemType}? This action cannot be undone.
                         </p>
-                        {service && (
+                        {targetItem && (
                             <div className="bg-gray-50 rounded-lg p-3 text-left">
                                 <p className="text-sm font-medium text-gray-900 flex items-center">
-                                    <span className="text-2xl mr-2">{service.icon}</span>
-                                    {service.title}
+                                    {targetItem.icon && (
+                                        <span className="text-2xl mr-2">{targetItem.icon}</span>
+                                    )}
+                                    {displayName}
                                 </p>
-                                <p className="text-xs text-gray-500 mt-1 truncate">
-                                    {service.description}
-                                </p>
+                                {(targetItem.description || targetItem.message || targetItem.text) && (
+                                    <p className="text-xs text-gray-500 mt-1 truncate">
+                                        {targetItem.description || targetItem.message || targetItem.text}
+                                    </p>
+                                )}
                             </div>
                         )}
                     </div>
@@ -85,7 +103,7 @@ export default function DeleteConfirmModal({ show, service, onConfirm, onCancel 
                             Cancel
                         </button>
                         <button
-                            onClick={() => service && onConfirm(service._id)}
+                            onClick={() => targetItem && onConfirm(targetItem._id)}
                             className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
                         >
                             Delete
