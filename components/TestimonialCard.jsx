@@ -60,7 +60,7 @@ export default function TestimonialCard({ testimonial }) {
 
             {/* Message */}
             <p className="text-gray-700 mb-6 italic flex-grow leading-relaxed">
-                "{message}"
+                {message}
             </p>
 
             {/* Author Section */}
