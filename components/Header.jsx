@@ -71,12 +71,12 @@ export default function Header() {
                             </Link>
                         ))}
 
-                        {/* Admin Login Button */}
+                        {/* Login Button */}
                         <Link
-                            href="/admin/login"
+                            href="/login"
                             className="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-2 rounded-full font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105"
                         >
-                            Admin Login
+                            Login
                         </Link>
                     </div>
 
@@ -114,8 +114,8 @@ export default function Header() {
                 {/* Mobile Navigation */}
                 <div
                     className={`lg:hidden transition-all duration-300 ease-in-out ${isMenuOpen
-                            ? 'max-h-screen opacity-100 mt-4'
-                            : 'max-h-0 opacity-0 overflow-hidden'
+                        ? 'max-h-screen opacity-100 mt-4'
+                        : 'max-h-0 opacity-0 overflow-hidden'
                         }`}
                 >
                     <div className="bg-white rounded-lg shadow-lg p-4 space-y-2">
@@ -130,13 +130,13 @@ export default function Header() {
                             </Link>
                         ))}
 
-                        {/* Admin Login in Mobile Menu */}
+                        {/* Login in Mobile Menu */}
                         <Link
-                            href="/admin/login"
+                            href="/login"
                             onClick={closeMenu}
                             className="block bg-gradient-to-r from-primary-500 to-accent-500 text-white px-4 py-3 rounded-lg font-semibold text-center hover:shadow-lg transition-all duration-300"
                         >
-                            Admin Login
+                            Login
                         </Link>
                     </div>
                 </div>

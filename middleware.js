@@ -2,8 +2,10 @@ import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
 /**
- * Middleware to protect admin routes
- * Only users with role 'admin' can access /admin/* routes (except login)
+ * Middleware to protect admin and user routes
+ * - Only users with role 'admin' can access /admin/*
+ * - Only users with role 'user' can access /user/*
+ * - Unauthenticated users are redirected to /login
  */
 export default withAuth(
     function middleware(req) {
@@ -11,32 +13,48 @@ export default withAuth(
         const { pathname } = req.nextUrl;
 
         // Allow access to login page
-        if (pathname.startsWith('/admin/login')) {
+        if (pathname === '/login' || pathname.startsWith('/verify-email')) {
             return NextResponse.next();
         }
 
-        // Check if user is admin
-        if (token?.role !== 'admin') {
-            // Redirect non-admin users to login
-            return NextResponse.redirect(new URL('/admin/login', req.url));
+        // Protect admin routes
+        if (pathname.startsWith('/admin')) {
+            if (token?.role !== 'admin') {
+                // Redirect non-admin users to login
+                return NextResponse.redirect(new URL('/login', req.url));
+            }
+            return NextResponse.next();
         }
 
-        // Allow admin users to proceed
+        // Protect user routes
+        if (pathname.startsWith('/user')) {
+            if (token?.role !== 'user') {
+                // Redirect non-user users to login
+                return NextResponse.redirect(new URL('/login', req.url));
+            }
+            return NextResponse.next();
+        }
+
         return NextResponse.next();
     },
     {
         callbacks: {
-            // Only run middleware if there's a token or if accessing admin routes
+            // Only run middleware if there's a token or if accessing protected routes
             authorized: ({ token, req }) => {
                 const { pathname } = req.nextUrl;
 
-                // Allow login page without token
-                if (pathname.startsWith('/admin/login')) {
+                // Allow login pages without token
+                if (pathname === '/login' || pathname.startsWith('/verify-email')) {
                     return true;
                 }
 
-                // All other admin routes require a token
-                return !!token;
+                // Protected routes require a token
+                if (pathname.startsWith('/admin') || pathname.startsWith('/user')) {
+                    return !!token;
+                }
+
+                // Allow other routes
+                return true;
             },
         },
     }
@@ -46,5 +64,7 @@ export default withAuth(
 export const config = {
     matcher: [
         '/admin/:path*',
+        '/user/:path*',
+        '/login',
     ],
 };

@@ -8,6 +8,7 @@ import CompanyForm from '../../components/admin/CompanyForm';
 import GalleryManager from '../../components/admin/GalleryManager';
 import ServiceManager from '../../components/admin/ServiceManager';
 import TestimonialManager from '../../components/admin/TestimonialManager';
+import AdminUsers from './users/page';
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('upload');
@@ -16,13 +17,13 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         if (status === 'unauthenticated') {
-            router.push('/admin/login');
+            router.push('/login');
         }
     }, [status, router]);
 
     const handleLogout = async () => {
         await signOut({ redirect: false });
-        router.push('/admin/login');
+        router.push('/login');
     };
 
     if (status === 'loading') {
@@ -125,6 +126,15 @@ export default function AdminDashboard() {
                             >
                                 Company Details
                             </button>
+                            <button
+                                onClick={() => setActiveTab('users')}
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'users'
+                                    ? 'border-primary-600 text-primary-600'
+                                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                                    }`}
+                            >
+                                User Management
+                            </button>
                         </nav>
                     </div>
 
@@ -135,6 +145,7 @@ export default function AdminDashboard() {
                         {activeTab === 'services' && <ServiceManager />}
                         {activeTab === 'testimonials' && <TestimonialManager />}
                         {activeTab === 'company' && <CompanyForm />}
+                        {activeTab === 'users' && <AdminUsers />}
                     </div>
                 </div>
             </main>

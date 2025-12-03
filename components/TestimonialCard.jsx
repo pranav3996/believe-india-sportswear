@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 export default function TestimonialCard({ testimonial }) {
     const name = testimonial.name || testimonial.customerName || 'Anonymous';
     const message = testimonial.message || testimonial.text || '';
@@ -69,22 +71,18 @@ export default function TestimonialCard({ testimonial }) {
                     {/* Avatar */}
                     <div className="mr-4 flex-shrink-0">
                         {avatarUrl ? (
-                            <img
+                            <Image
                                 src={avatarUrl}
                                 alt={name}
-                                className="w-12 h-12 rounded-full object-cover border-2 border-primary-200"
-                                onError={(e) => {
-                                    // Fallback to initials if image fails to load
-                                    e.target.style.display = 'none';
-                                    e.target.nextSibling.style.display = 'flex';
-                                }}
+                                width={48}
+                                height={48}
+                                className="rounded-full object-cover border-2 border-primary-200"
                             />
-                        ) : null}
-                        <div
-                            className={`w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-accent-500 flex items-center justify-center text-white font-bold ${avatarUrl ? 'hidden' : 'flex'}`}
-                        >
-                            {getInitials(name)}
-                        </div>
+                        ) : (
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-accent-500 flex items-center justify-center text-white font-bold">
+                                {getInitials(name)}
+                            </div>
+                        )}
                     </div>
 
                     {/* Name and Details */}

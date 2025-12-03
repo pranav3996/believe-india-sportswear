@@ -112,10 +112,10 @@ export default function Footer() {
                             </li>
                             <li>
                                 <Link
-                                    href="/admin/login"
+                                    href="/login"
                                     className="text-gray-400 hover:text-primary-400 transition-colors duration-300 text-sm"
                                 >
-                                    Admin Login
+                                    Login
                                 </Link>
                             </li>
                         </ul>

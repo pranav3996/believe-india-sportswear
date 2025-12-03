@@ -10,6 +10,7 @@ import WhatsAppButton from '../components/WhatsAppButton';
 export default function RootLayout({ children }) {
     const pathname = usePathname();
     const isAdminRoute = pathname?.startsWith('/admin');
+    const isUserRoute = pathname?.startsWith('/user');
 
     return (
         <html lang="en">
@@ -29,10 +30,10 @@ export default function RootLayout({ children }) {
             </head>
             <body className="bg-gradient-to-br from-gray-50 to-gray-100">
                 <Providers>
-                    {!isAdminRoute && <Header />}
+                    {!isAdminRoute && !isUserRoute && <Header />}
                     {children}
-                    {!isAdminRoute && <Footer />}
-                    {!isAdminRoute && <WhatsAppButton />}
+                    {!isAdminRoute && !isUserRoute && <Footer />}
+                    {!isAdminRoute && !isUserRoute && <WhatsAppButton />}
                 </Providers>
             </body>
         </html>

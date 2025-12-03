@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import DeleteConfirmModal from './DeleteConfirmModal';
 
 export default function TestimonialManager() {
@@ -122,8 +123,8 @@ export default function TestimonialManager() {
             {notification.show && (
                 <div
                     className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg ${notification.type === 'success'
-                            ? 'bg-green-50 border border-green-200'
-                            : 'bg-red-50 border border-red-200'
+                        ? 'bg-green-50 border border-green-200'
+                        : 'bg-red-50 border border-red-200'
                         }`}
                 >
                     <div className="flex items-start">
@@ -178,9 +179,6 @@ export default function TestimonialManager() {
                                         Rating
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Status
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Date
                                     </th>
                                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -195,10 +193,12 @@ export default function TestimonialManager() {
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 h-10 w-10">
                                                     {testimonial.avatarUrl ? (
-                                                        <img
-                                                            className="h-10 w-10 rounded-full object-cover"
+                                                        <Image
+                                                            className="rounded-full object-cover"
                                                             src={testimonial.avatarUrl}
                                                             alt={testimonial.name || testimonial.customerName}
+                                                            width={40}
+                                                            height={40}
                                                         />
                                                     ) : (
                                                         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-400 to-accent-500 flex items-center justify-center text-white font-bold">
@@ -227,16 +227,6 @@ export default function TestimonialManager() {
                                             <div className="flex items-center">
                                                 {renderStars(testimonial.rating || 5)}
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${testimonial.approved
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-yellow-100 text-yellow-800'
-                                                    }`}
-                                            >
-                                                {testimonial.approved ? 'Approved' : 'Pending'}
-                                            </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {formatDate(testimonial.createdAt)}

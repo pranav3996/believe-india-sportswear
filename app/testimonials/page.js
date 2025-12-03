@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import TestimonialForm from '../../components/TestimonialForm';
 import TestimonialCard from '../../components/TestimonialCard';
 import ClientsSection from '../../components/ClientsSection';
 
@@ -25,12 +24,6 @@ export default function TestimonialsPage() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleFormSuccess = () => {
-        // Optionally refresh testimonials after submission
-        // Note: New submissions won't appear until approved
-        fetchTestimonials();
     };
 
     return (
@@ -115,23 +108,6 @@ export default function TestimonialsPage() {
 
             {/* Clients Section - SECOND */}
             <ClientsSection />
-
-            {/* Feedback Form Section - THIRD */}
-            <section className="bg-gray-100 py-16">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-3xl mx-auto">
-                        <div className="text-center mb-10">
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                Share Your Experience
-                            </h2>
-                            <p className="text-gray-600 text-lg">
-                                We value your feedback! Tell us about your experience with Believe India Sportswear
-                            </p>
-                        </div>
-                        <TestimonialForm onSuccess={handleFormSuccess} />
-                    </div>
-                </div>
-            </section>
         </div>
     );
 }
