@@ -11,6 +11,7 @@ export default function RootLayout({ children }) {
     const pathname = usePathname();
     const isAdminRoute = pathname?.startsWith('/admin');
     const isUserRoute = pathname?.startsWith('/user');
+    const isChangePasswordRoute = pathname === '/change-password';
 
     return (
         <html lang="en">
@@ -30,10 +31,10 @@ export default function RootLayout({ children }) {
             </head>
             <body className="bg-gradient-to-br from-gray-50 to-gray-100">
                 <Providers>
-                    {!isAdminRoute && !isUserRoute && <Header />}
+                    {!isAdminRoute && !isUserRoute && !isChangePasswordRoute && <Header />}
                     {children}
-                    {!isAdminRoute && !isUserRoute && <Footer />}
-                    {!isAdminRoute && !isUserRoute && <WhatsAppButton />}
+                    {!isAdminRoute && !isUserRoute && !isChangePasswordRoute && <Footer />}
+                    {!isAdminRoute && !isUserRoute && !isChangePasswordRoute && <WhatsAppButton />}
                 </Providers>
             </body>
         </html>

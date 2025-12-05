@@ -1,60 +1,66 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-function LoginForm() {
+export default function ForgotPassword() {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
+    const { data: session } = useSession();
     const router = useRouter();
-    const searchParams = useSearchParams();
 
-    useEffect(() => {
-        // Check for verified query param
-        if (searchParams.get('verified') === 'true') {
-            setSuccess('Email verified successfully! You can now log in.');
-        }
-    }, [searchParams]);
+    // Redirect if already logged in
+    if (session) {
+        router.push(session.user.role === 'admin' ? '/admin' : '/user/dashboard');
+        return null;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setSuccess('');
+
+        // Validation
+        if (!email || !email.trim()) {
+            setError('Please enter your email address.');
+            return;
+        }
+
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setError('Please enter a valid email address.');
+            return;
+        }
+
         setLoading(true);
 
         try {
-            const result = await signIn('credentials', {
-                email,
-                password,
-                redirect: false,
+            const response = await fetch('/api/auth/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email.trim() }),
             });
 
-            if (result?.error) {
-                setError(result.error);
-            } else {
-                // Login successful - fetch user data to determine role
-                const response = await fetch('/api/auth/session');
-                const session = await response.json();
+            const data = await response.json();
 
-                // Redirect based on role
-                if (session?.user?.role === 'admin') {
-                    router.push('/admin');
-                } else if (session?.user?.role === 'user') {
-                    router.push('/user/dashboard');
-                } else {
-                    // Fallback
-                    router.push('/');
-                }
-                router.refresh();
+            if (response.ok) {
+                setSuccess(data.message);
+                setEmail('');
+            } else {
+                // Even on error, show success message for security
+                setSuccess('If an account exists with this email, you will receive a password reset link shortly.');
             }
         } catch (err) {
-            setError('An error occurred. Please try again.');
-            console.error('Login error:', err);
+            console.error('Forgot password error:', err);
+            // Show success message even on error for security
+            setSuccess('If an account exists with this email, you will receive a password reset link shortly.');
         } finally {
             setLoading(false);
         }
@@ -66,14 +72,14 @@ function LoginForm() {
                 {/* Header */}
                 <div className="text-center">
                     <h2 className="text-4xl font-display font-bold gradient-text mb-2">
-                        Welcome Back
+                        Forgot Password?
                     </h2>
                     <p className="text-gray-600">
-                        Sign in to your account
+                        No worries, we&apos;ll send you reset instructions
                     </p>
                 </div>
 
-                {/* Login Form */}
+                {/* Form */}
                 <div className="glass-effect rounded-2xl shadow-xl p-8">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {error && (
@@ -91,6 +97,9 @@ function LoginForm() {
                                 <div className="flex">
                                     <div className="ml-3">
                                         <p className="text-sm text-green-700">{success}</p>
+                                        <p className="text-xs text-green-600 mt-2">
+                                            📧 Check your inbox and spam folder
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -113,50 +122,33 @@ function LoginForm() {
                             />
                         </div>
 
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                                Password
-                            </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="current-password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="input-field"
-                                placeholder="••••••••"
-                            />
-                        </div>
-
-                        <div className="flex items-center justify-end">
-                            <Link
-                                href="/forgot-password"
-                                className="text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors"
-                            >
-                                Forgot password?
-                            </Link>
-                        </div>
-
                         <button
                             type="submit"
                             disabled={loading}
                             className="w-full bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         >
-                            {loading ? 'Signing in...' : 'Sign In'}
+                            {loading ? 'Sending Reset Link...' : 'Send Reset Link'}
                         </button>
                     </form>
 
-                    {/* Register Link */}
-                    <div className="mt-6 text-center">
+                    {/* Links */}
+                    <div className="mt-6 text-center space-y-2">
+                        <p className="text-sm text-gray-600">
+                            Remember your password?{' '}
+                            <Link
+                                href="/login"
+                                className="text-primary-600 hover:text-primary-700 font-medium transition-colors"
+                            >
+                                Sign in
+                            </Link>
+                        </p>
                         <p className="text-sm text-gray-600">
                             Don&apos;t have an account?{' '}
                             <Link
                                 href="/register"
                                 className="text-primary-600 hover:text-primary-700 font-medium transition-colors"
                             >
-                                Create one now
+                                Register now
                             </Link>
                         </p>
                     </div>
@@ -169,20 +161,5 @@ function LoginForm() {
                 <div className="absolute bottom-20 right-10 w-72 h-72 bg-accent-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
             </div>
         </div>
-    );
-}
-
-export default function UnifiedLogin() {
-    return (
-        <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-accent-50 to-primary-100">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading...</p>
-                </div>
-            </div>
-        }>
-            <LoginForm />
-        </Suspense>
     );
 }

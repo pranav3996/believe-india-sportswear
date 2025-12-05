@@ -135,6 +135,15 @@ export default function AdminDashboard() {
                             >
                                 User Management
                             </button>
+                            <button
+                                onClick={() => setActiveTab('security')}
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'security'
+                                    ? 'border-primary-600 text-primary-600'
+                                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                                    }`}
+                            >
+                                Account Security
+                            </button>
                         </nav>
                     </div>
 
@@ -146,6 +155,97 @@ export default function AdminDashboard() {
                         {activeTab === 'testimonials' && <TestimonialManager />}
                         {activeTab === 'company' && <CompanyForm />}
                         {activeTab === 'users' && <AdminUsers />}
+                        {activeTab === 'security' && (
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Account Security</h3>
+                                    <p className="text-gray-600">Manage your account security settings</p>
+                                </div>
+
+                                {/* Admin Info Card */}
+                                <div className="bg-gradient-to-r from-primary-50 to-accent-50 rounded-lg p-6 border border-primary-200">
+                                    <div className="flex items-center mb-4">
+                                        <div className="w-16 h-16 bg-gradient-to-r from-primary-500 to-accent-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                                            {session?.user?.name?.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div className="ml-4">
+                                            <h4 className="text-lg font-bold text-gray-900">{session?.user?.name}</h4>
+                                            <p className="text-gray-600">{session?.user?.email}</p>
+                                            <span className="inline-block mt-1 px-3 py-1 bg-primary-500 text-white text-xs font-semibold rounded-full">
+                                                Administrator
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Security Options */}
+                                <div className="bg-white rounded-lg shadow-sm border border-gray-200 divide-y divide-gray-200">
+                                    {/* Change Password */}
+                                    <div className="p-6">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center">
+                                                <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                                                    <svg
+                                                        className="w-6 h-6 text-primary-600"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                                <div className="ml-4">
+                                                    <h5 className="text-base font-semibold text-gray-900">Password</h5>
+                                                    <p className="text-sm text-gray-600">Update your password to keep your account secure</p>
+                                                </div>
+                                            </div>
+                                            <a
+                                                href="/change-password"
+                                                className="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105 text-sm font-medium"
+                                            >
+                                                Change Password
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {/* Security Tips */}
+                                    <div className="p-6 bg-gray-50">
+                                        <h5 className="text-base font-semibold text-gray-900 mb-3">Security Best Practices</h5>
+                                        <ul className="space-y-2 text-sm text-gray-600">
+                                            <li className="flex items-start">
+                                                <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                </svg>
+                                                Use a strong, unique password with at least 8 characters
+                                            </li>
+                                            <li className="flex items-start">
+                                                <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                </svg>
+                                                Include uppercase, lowercase, numbers, and special characters
+                                            </li>
+                                            <li className="flex items-start">
+                                                <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                </svg>
+                                                Change your password regularly (every 3-6 months)
+                                            </li>
+                                            <li className="flex items-start">
+                                                <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                </svg>
+                                                Never share your password with anyone
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </main>

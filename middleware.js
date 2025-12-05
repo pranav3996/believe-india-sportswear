@@ -2,9 +2,10 @@ import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
 /**
- * Middleware to protect admin and user routes
+ * Middleware to protect admin, user, and password management routes
  * - Only users with role 'admin' can access /admin/*
  * - Only users with role 'user' can access /user/*
+ * - Only authenticated users can access /change-password
  * - Unauthenticated users are redirected to /login
  */
 export default withAuth(
@@ -12,8 +13,19 @@ export default withAuth(
         const token = req.nextauth.token;
         const { pathname } = req.nextUrl;
 
-        // Allow access to login page
-        if (pathname === '/login' || pathname.startsWith('/verify-email')) {
+        // Allow access to public auth pages
+        if (pathname === '/login' ||
+            pathname.startsWith('/verify-email') ||
+            pathname.startsWith('/forgot-password') ||
+            pathname.startsWith('/reset-password')) {
+            return NextResponse.next();
+        }
+
+        // Protect change-password route (requires authentication)
+        if (pathname.startsWith('/change-password')) {
+            if (!token) {
+                return NextResponse.redirect(new URL('/login', req.url));
+            }
             return NextResponse.next();
         }
 
@@ -43,13 +55,18 @@ export default withAuth(
             authorized: ({ token, req }) => {
                 const { pathname } = req.nextUrl;
 
-                // Allow login pages without token
-                if (pathname === '/login' || pathname.startsWith('/verify-email')) {
+                // Allow public auth pages without token
+                if (pathname === '/login' ||
+                    pathname.startsWith('/verify-email') ||
+                    pathname.startsWith('/forgot-password') ||
+                    pathname.startsWith('/reset-password')) {
                     return true;
                 }
 
                 // Protected routes require a token
-                if (pathname.startsWith('/admin') || pathname.startsWith('/user')) {
+                if (pathname.startsWith('/admin') ||
+                    pathname.startsWith('/user') ||
+                    pathname.startsWith('/change-password')) {
                     return !!token;
                 }
 
@@ -66,5 +83,8 @@ export const config = {
         '/admin/:path*',
         '/user/:path*',
         '/login',
+        '/change-password',
+        '/forgot-password',
+        '/reset-password',
     ],
 };
