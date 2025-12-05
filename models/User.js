@@ -24,12 +24,49 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'user'],
+        enum: ['admin', 'user', 'super_admin', 'editor'],
         default: 'user',
     },
+    // Customer-specific fields
+    phone: {
+        type: String,
+        trim: true,
+    },
+    address: {
+        street: String,
+        city: String,
+        state: String,
+        pincode: String,
+        country: {
+            type: String,
+            default: 'India',
+        },
+    },
+    // Admin-specific fields
+    permissions: [{
+        type: String,
+        enum: [
+            'products.view',
+            'products.create',
+            'products.edit',
+            'products.delete',
+            'categories.manage',
+            'orders.view',
+            'orders.manage',
+            'customers.view',
+            'customers.manage',
+            'content.manage',
+            'admins.manage',
+            'analytics.view',
+        ],
+    }],
     isVerified: {
         type: Boolean,
         default: false,
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
     },
     verificationToken: {
         type: String,
@@ -46,6 +83,9 @@ const userSchema = new mongoose.Schema({
     resetTokenExpiry: {
         type: Date,
         default: null,
+    },
+    lastLogin: {
+        type: Date,
     },
     createdAt: {
         type: Date,
@@ -71,4 +111,23 @@ userSchema.methods.generateResetToken = function () {
     return token;
 };
 
+// Method to check if user has permission
+userSchema.methods.hasPermission = function (permission) {
+    // Super admin has all permissions
+    if (this.role === 'super_admin' || this.role === 'admin') {
+        return true;
+    }
+
+    // Check if user has specific permission
+    return this.permissions && this.permissions.includes(permission);
+};
+
+// Virtual for order history
+userSchema.virtual('orders', {
+    ref: 'Order',
+    localField: '_id',
+    foreignField: 'customer',
+});
+
 export default mongoose.models.User || mongoose.model('User', userSchema);
+

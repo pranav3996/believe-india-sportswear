@@ -10,9 +10,14 @@ import GalleryManager from '../../components/admin/GalleryManager';
 import ServiceManager from '../../components/admin/ServiceManager';
 import TestimonialManager from '../../components/admin/TestimonialManager';
 import AdminUsers from './users/page';
+import DashboardOverview from '../../components/admin/DashboardOverview';
+import ProductsManager from '../../components/admin/ProductsManager';
+import CategoriesManager from '../../components/admin/CategoriesManager';
+import OrdersManager from '../../components/admin/OrdersManager';
+import InventoryManager from '../../components/admin/InventoryManager';
 
 export default function AdminDashboard() {
-    const [activeTab, setActiveTab] = useState('upload');
+    const [activeTab, setActiveTab] = useState('dashboard');
     const router = useRouter();
     const { data: session, status } = useSession();
 
@@ -113,13 +118,58 @@ export default function AdminDashboard() {
                     <div className="border-b border-gray-200">
                         <nav className="flex space-x-8 px-6 overflow-x-auto" aria-label="Tabs">
                             <button
+                                onClick={() => setActiveTab('dashboard')}
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'dashboard'
+                                    ? 'border-primary-600 text-primary-600'
+                                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                                    }`}
+                            >
+                                📊 Dashboard
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('products')}
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'products'
+                                    ? 'border-primary-600 text-primary-600'
+                                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                                    }`}
+                            >
+                                🛍️ Products
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('categories')}
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'categories'
+                                    ? 'border-primary-600 text-primary-600'
+                                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                                    }`}
+                            >
+                                📁 Categories
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('orders')}
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'orders'
+                                    ? 'border-primary-600 text-primary-600'
+                                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                                    }`}
+                            >
+                                📦 Orders
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('inventory')}
+                                className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'inventory'
+                                    ? 'border-primary-600 text-primary-600'
+                                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                                    }`}
+                            >
+                                📊 Inventory
+                            </button>
+                            <button
                                 onClick={() => setActiveTab('upload')}
                                 className={`py-4 px-2 font-semibold border-b-2 transition-colors duration-300 whitespace-nowrap ${activeTab === 'upload'
                                     ? 'border-primary-600 text-primary-600'
                                     : 'border-transparent text-gray-600 hover:text-gray-800'
                                     }`}
                             >
-                                Upload Images
+                                📤 Upload Images
                             </button>
                             <button
                                 onClick={() => setActiveTab('gallery')}
@@ -128,7 +178,7 @@ export default function AdminDashboard() {
                                     : 'border-transparent text-gray-600 hover:text-gray-800'
                                     }`}
                             >
-                                Manage Gallery
+                                🖼️ Gallery
                             </button>
                             <button
                                 onClick={() => setActiveTab('services')}
@@ -137,7 +187,7 @@ export default function AdminDashboard() {
                                     : 'border-transparent text-gray-600 hover:text-gray-800'
                                     }`}
                             >
-                                Services
+                                ⚙️ Services
                             </button>
                             <button
                                 onClick={() => setActiveTab('testimonials')}
@@ -146,7 +196,7 @@ export default function AdminDashboard() {
                                     : 'border-transparent text-gray-600 hover:text-gray-800'
                                     }`}
                             >
-                                Testimonials
+                                💬 Testimonials
                             </button>
                             <button
                                 onClick={() => setActiveTab('company')}
@@ -155,7 +205,7 @@ export default function AdminDashboard() {
                                     : 'border-transparent text-gray-600 hover:text-gray-800'
                                     }`}
                             >
-                                Company Details
+                                🏢 Company Details
                             </button>
                             <button
                                 onClick={() => setActiveTab('users')}
@@ -164,7 +214,7 @@ export default function AdminDashboard() {
                                     : 'border-transparent text-gray-600 hover:text-gray-800'
                                     }`}
                             >
-                                User Management
+                                👥 Users
                             </button>
                             <button
                                 onClick={() => setActiveTab('security')}
@@ -173,13 +223,18 @@ export default function AdminDashboard() {
                                     : 'border-transparent text-gray-600 hover:text-gray-800'
                                     }`}
                             >
-                                Account Security
+                                🔒 Security
                             </button>
                         </nav>
                     </div>
 
                     {/* Tab Content */}
                     <div className="p-6">
+                        {activeTab === 'dashboard' && <DashboardOverview />}
+                        {activeTab === 'products' && <ProductsManager />}
+                        {activeTab === 'categories' && <CategoriesManager />}
+                        {activeTab === 'orders' && <OrdersManager />}
+                        {activeTab === 'inventory' && <InventoryManager />}
                         {activeTab === 'upload' && <ImageUpload />}
                         {activeTab === 'gallery' && <GalleryManager />}
                         {activeTab === 'services' && <ServiceManager />}
