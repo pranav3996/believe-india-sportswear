@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
+import Swal from 'sweetalert2';
 import ImageUpload from '../../components/admin/ImageUpload';
 import CompanyForm from '../../components/admin/CompanyForm';
 import GalleryManager from '../../components/admin/GalleryManager';
@@ -16,14 +17,44 @@ export default function AdminDashboard() {
     const { data: session, status } = useSession();
 
     useEffect(() => {
+        if (status === 'loading') return; // Don't do anything while loading
+
         if (status === 'unauthenticated') {
+            // No session at all - redirect to login
             router.push('/login');
+        } else if (session?.user?.role === 'user') {
+            // Logged in but as user, not admin - redirect to user dashboard
+            router.push('/user/dashboard');
         }
-    }, [status, router]);
+    }, [status, session, router]);
 
     const handleLogout = async () => {
-        await signOut({ redirect: false });
-        router.push('/login');
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You will be logged out of your account",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#667eea',
+            cancelButtonColor: '#ef4444',
+            confirmButtonText: 'Yes, logout',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            await signOut({ redirect: false });
+
+            Swal.fire({
+                title: 'Logged Out!',
+                text: 'You have been successfully logged out',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+            setTimeout(() => {
+                router.push('/login');
+            }, 1500);
+        }
     };
 
     if (status === 'loading') {

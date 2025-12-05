@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth/next';
 // import { authOptions } from '../../api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import { authOptions } from '../api/auth/[...nextauth]/route';
+import LogoutButton from '../../components/user/LogoutButton';
 
 export const metadata = {
     title: 'User Dashboard - Believe India',
@@ -11,10 +12,9 @@ export const metadata = {
 export default async function UserLayout({ children }) {
     const session = await getServerSession(authOptions);
 
-    // Redirect if not authenticated or not a user
-    if (!session || session.user?.role !== 'user') {
-        redirect('/login');
-    }
+    // Middleware handles authentication and role checks
+    // We only need session here for displaying user info
+    // If user reaches here, middleware has already validated they're authenticated with 'user' role
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -49,14 +49,7 @@ export default async function UserLayout({ children }) {
                             >
                                 Profile
                             </a>
-                            <form action="/api/auth/signout" method="POST">
-                                <button
-                                    type="submit"
-                                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                                >
-                                    Logout
-                                </button>
-                            </form>
+                            <LogoutButton />
                         </nav>
                     </div>
                 </div>

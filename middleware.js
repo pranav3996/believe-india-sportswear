@@ -31,18 +31,26 @@ export default withAuth(
 
         // Protect admin routes
         if (pathname.startsWith('/admin')) {
-            if (token?.role !== 'admin') {
-                // Redirect non-admin users to login
+            if (!token) {
+                // Not authenticated at all - redirect to login
                 return NextResponse.redirect(new URL('/login', req.url));
+            }
+            if (token?.role !== 'admin') {
+                // Authenticated but wrong role - redirect user to their dashboard
+                return NextResponse.redirect(new URL('/user/dashboard', req.url));
             }
             return NextResponse.next();
         }
 
         // Protect user routes
         if (pathname.startsWith('/user')) {
-            if (token?.role !== 'user') {
-                // Redirect non-user users to login
+            if (!token) {
+                // Not authenticated at all - redirect to login
                 return NextResponse.redirect(new URL('/login', req.url));
+            }
+            if (token?.role !== 'user') {
+                // Authenticated but wrong role - redirect admin to their dashboard
+                return NextResponse.redirect(new URL('/admin', req.url));
             }
             return NextResponse.next();
         }
