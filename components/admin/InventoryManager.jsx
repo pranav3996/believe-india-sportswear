@@ -13,7 +13,7 @@ export default function InventoryManager() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Inventory Module Coming Soon!</h3>
                 <p className="text-gray-600 mb-6">
                     The inventory management system is currently being developed. <br />
-                    You'll be able to track stock levels and manage inventory here.
+                    You&apos;ll be able to track stock levels and manage inventory here.
                 </p>
                 <div className="inline-block bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-left max-w-md">
                     <h4 className="font-bold text-gray-900 mb-3">✨ Features in Development:</h4>
